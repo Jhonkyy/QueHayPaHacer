@@ -63,6 +63,7 @@ class Sistema:
 
     # Métodos de usuario
     def registrar_usuario(self, nombre: str, email: str, password: str) -> bool:
+        email = email.strip()  # Eliminar espacios en blanco o saltos de línea
         if not nombre or not email or not password:
             print("Error: Todos los campos son obligatorios.")
             return False
@@ -87,6 +88,7 @@ class Sistema:
             return False
 
     def iniciar_sesion(self, email: str, password: str) -> bool:
+        email = email.strip()  # Eliminar espacios en blanco o saltos de línea
         cursor = self.conn.cursor()
         cursor.execute('SELECT id, nombre, email, password_hash FROM usuarios WHERE email = ?', (email,))
         usuario_data = cursor.fetchone()
@@ -320,11 +322,11 @@ class Sistema:
 
     def agregar_categoria_preferida(self, categoria: str):
         if not self.usuario_actual:
-            return
-            
+            print("Error: Debes iniciar sesión para agregar categorías preferidas.")
+            return False
+
         if categoria not in self.usuario_actual.categorias_preferidas:
             self.usuario_actual.categorias_preferidas.append(categoria)
-            
             categorias_str = ','.join(self.usuario_actual.categorias_preferidas)
             cursor = self.conn.cursor()
             cursor.execute('''
@@ -333,6 +335,11 @@ class Sistema:
                 WHERE id = ?
             ''', (categorias_str, self.usuario_actual.id))
             self.conn.commit()
+            print(f"Categoría '{categoria}' agregada a tus preferencias.")
+            return True
+        else:
+            print(f"La categoría '{categoria}' ya está en tus preferencias.")
+            return False
 
     # Métodos auxiliares
     def obtener_evento_por_id(self, evento_id: int) -> Optional[Evento]:

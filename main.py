@@ -1,7 +1,3 @@
-import sys
-from pathlib import Path
-sys.path.append(str(Path(__file__).parent))
-
 from interfaces.consola import InterfazConsola
 from models.sistema import Sistema
 
